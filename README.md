@@ -1,1 +1,2 @@
 # NNproject
+Neural network project
