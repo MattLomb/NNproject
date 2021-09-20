@@ -18,7 +18,7 @@ def generate_and_save_images(images, it, plot_fig=True):
 
     # tight_layout minimizes the overlap between 2 sub-plots
     fig.tight_layout()
-    plt.savefig('images/generated/image_at_iter_{:04d}.png'.format(it))
+    plt.savefig('StyleGAN2/images/generated/image_at_iter_{:04d}.png'.format(it))
     if plot_fig: plt.show()
 
 
