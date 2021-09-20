@@ -3,7 +3,7 @@ Neural network project of generation of images by text based on StyleGAN2 and CL
 
 ### Suggestion for developing
 After the installation of a pip packages into the environment, 
-it's necessary to update the requirments.txt running this command.
+it's necessary to update the requirments.txt running this command:
 ```
 pip freeze > requirements.txt
 ```
