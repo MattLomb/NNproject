@@ -5,7 +5,7 @@ Neural network project of generation of images by text based on StyleGAN2 and CL
 After the installation of a pip packages into the environment, 
 it's necessary to update the requirments.txt running this command.
 ```
-pip freeze > requirments.txt
+pip freeze > requirements.txt
 ```
 # HOW TO RUN
 Create the environment
