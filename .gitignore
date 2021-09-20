@@ -1,2 +1,8 @@
 /env/
 /venv/
+/StyleGAN2/weights/car.npy
+/StyleGAN2/weights/cat.npy
+/StyleGAN2/weights/church.npy
+/StyleGAN2/weights/ffhq.npy
+/StyleGAN2/weights/horse.npy
+/images/generated/
