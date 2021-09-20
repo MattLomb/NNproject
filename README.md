@@ -19,7 +19,7 @@ source env/bin/activate
 ```
 Install the python packages
 ```
-pip install -r requirments.txt
+pip install -r requirements.txt
 ```
 
 # References
