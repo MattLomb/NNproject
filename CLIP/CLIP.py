@@ -11,7 +11,8 @@ class CLIP:
 
     def __load_models(self):
         self.model = tf.keras.models.load_model("CLIP/model")
-        self.model.compile()
+        self.model.summary()
+        #self.model.compile()
 
     '''
     Incompatible shapes: [50,768] vs. [1,1025,768]

@@ -5,5 +5,7 @@
 /StyleGAN2/weights/church.npy
 /StyleGAN2/weights/ffhq.npy
 /StyleGAN2/weights/horse.npy
-/images/generated/
+/images/generated/*.jpeg
+/images/generated/*.jpg
+/images/generated/*.png
 /CLIP/CLIP-tf2/
