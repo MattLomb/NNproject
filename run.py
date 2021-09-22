@@ -13,6 +13,7 @@ from StyleGAN2.stylegan2_discriminator import StyleGan2Discriminator
 
 from problem import GenerationProblem
 from operators import get_operators
+from config import get_config
 
 parser = argparse.ArgumentParser()
 
@@ -23,6 +24,7 @@ parser.add_argument("--tmp-folder", type=str, default="./tmp")  # Folder in whic
 parser.add_argument("--target", type=str, default="a wolf at night with the moon in the background")  # txt2img
 
 config = parser.parse_args()
+vars(config).update(get_config(config.config))
 
 iteration = 0
 

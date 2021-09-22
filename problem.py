@@ -1,4 +1,4 @@
-from pymoo.model.problem import Problem
+from pymoo.core.problem import Problem
 from generator import Generator
 import numpy as np
 import tensorflow as tf
@@ -14,11 +14,10 @@ class GenerationProblem(Problem):
     def _evaluate(self, x, out, *args, **kwargs):
         rnd = np.random.RandomState()
         ls = rnd.randn(self.config.batch_size, self.config.dim_z).astype('float32')
-        ls = ls.astyle(float)
 
         generated = self.generator.generate(ls)
 
-        #sim = self.generator.clip_similarity(generated)
+        sim = self.generator.clip_similarity(generated)
 
         if self.config.problem_args["n_obj"] == 2 and self.config.use_discriminator:
             dis = self.generator.discriminate(generated)

@@ -10,9 +10,8 @@ class CLIP:
         self.__load_models()
 
     def __load_models(self):
-        self.model = tf.keras.models.load_model("CLIP/model")
-        self.model.summary()
-        #self.model.compile()
+        self.text_model = tf.keras.models.load_model("CLIP/models/text_model")
+        self.image_model = tf.keras.models.load_model("CLIP/models/image_model")
 
     '''
     Incompatible shapes: [50,768] vs. [1,1025,768]
@@ -29,8 +28,15 @@ class CLIP:
     ])
     '''
 
-    def predict(self, img_input, text_input):
-        return self.model.predict((img_input, text_input))
+    def predict_text(self, text_input):
+        text_input = text_input.astype("float32")
+        print("PREDICT TXT", text_input)
+        print("SHAPE TXT", text_input.shape, text_input.dtype)
+        return self.text_model.predict(text_input)
+
+    def predict_image(self, image_input):
+        print("SHAPE IMG", image_input.shape)
+        return self.text_model.predict(image_input)
 
     def tokenize(self, texts, context_length: int = 77,
                  truncate: bool = False):
@@ -67,7 +73,3 @@ class CLIP:
             result[i, :len(tokens)] = tokens
 
         return result
-
-    def get_model(self):
-        return self.model
-
