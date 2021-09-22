@@ -1,82 +1,99 @@
+import argparse
+import os
+import pickle
 import numpy as np
-import matplotlib.pyplot as plt
-import tensorflow as tf
+
+from pymoo.factory import get_algorithm, get_decision_making, get_decomposition
+from pymoo.optimize import minimize
+from pymoo.visualization.scatter import Scatter
 
 from StyleGAN2.utils.utils_stylegan2 import convert_images_to_uint8
 from StyleGAN2.stylegan2_generator import StyleGan2Generator
 from StyleGAN2.stylegan2_discriminator import StyleGan2Discriminator
 
+from problem import GenerationProblem
+from operators import get_operators
 
-def generate_and_save_images(images, it, plot_fig=True):
-    plt.close()
-    fig = plt.figure(figsize=(9, 9))
+parser = argparse.ArgumentParser()
 
-    for i in range(images.shape[0]):
-        plt.subplot(2, 2, i + 1)
-        plt.imshow(images[i])
-        plt.axis('off')
+parser.add_argument("--config", type=str, default="StyleGAN2_ffhq_d")  # MODEL
+parser.add_argument("--generations", type=int, default=500)  # Number of images generated
+parser.add_argument("--save-each", type=int, default=50)  # Images saved each 50 generations
+parser.add_argument("--tmp-folder", type=str, default="./tmp")  # Folder in which save the generated images
+parser.add_argument("--target", type=str, default="a wolf at night with the moon in the background")  # txt2img
 
-    # tight_layout minimizes the overlap between 2 sub-plots
-    fig.tight_layout()
-    plt.savefig('images/generated/image_at_iter_{:04d}.png'.format(it))
-    if plot_fig: plt.show()
+config = parser.parse_args()
 
-
-def normalize_image(image, mean, std):
-    for channel in range(3):
-        image[:, :, channel] = (image[:, :, channel] - mean[channel]) / std[channel]
-    return image
+iteration = 0
 
 
-impl = 'ref'  # 'ref' if cuda is not available in your machine
-gpu = False  # False if tensorflow cpu is used
-weights_name = 'ffhq'  # face model trained by Nvidia
-'''
-# instantiating generator network
-generator = StyleGan2Generator(weights=weights_name, impl=impl, gpu=gpu)
-discriminator = StyleGan2Discriminator(weights=weights_name, impl=impl, gpu=gpu)
+def save_callback(algorithm):
+    global iteration
+    global config
 
-# creating random latent vector
+    iteration += 1
+    if iteration % config.save_each == 0 or iteration == config.generations:
+        if config.problem_args["n_obj"] == 1:
+            sortedpop = sorted(algorithm.pop, key=lambda p: p.F)
+            X = np.stack([p.X for p in sortedpop])
+        else:
+            X = algorithm.pop.get("X")
+
+        ls = config.latent(config)
+        ls.set_from_population(X)
+
+        generated = algorithm.problem.generator.generate(ls, minibatch=config.batch_size)
+        ext = "jpg"
+        name = "genetic-it-%d.%s" % (
+            iteration, ext) if iteration < config.generations else "genetic-it-final.%s" % (ext,)
+        algorithm.problem.generator.save(generated, os.path.join(config.tmp_folder, name))
+
+
+problem = GenerationProblem(config)
+operators = get_operators(config)
+
+if not os.path.exists(config.tmp_folder):
+    os.mkdir(config.tmp_folder)
+
+algorithm = get_algorithm(
+    config.algorithm,
+    pop_size=config.pop_size,
+    sampling=operators["sampling"],
+    crossover=operators["crossover"],
+    mutation=operators["mutation"],
+    eliminate_duplicates=True,
+    callback=save_callback,
+    **(config.algorithm_args[
+           config.algorithm] if "algorithm_args" in config and config.algorithm in config.algorithm_args else dict())
+)
+
+res = minimize(
+    problem,
+    algorithm,
+    ("n_gen", config.generations),
+    save_history=False,
+    verbose=True,
+)
+
+pickle.dump(dict(
+    X=res.X,
+    F=res.F,
+    G=res.G,
+    CV=res.CV,
+), open(os.path.join(config.tmp_folder, "genetic_result"), "wb"))
+
+if config.problem_args["n_obj"] == 2:
+    plot = Scatter(labels=["similarity", "discriminator", ])
+    plot.add(res.F, color="red")
+    plot.save(os.path.join(config.tmp_folder, "F.jpg"))
+
+if config.problem_args["n_obj"] == 1:
+    sortedpop = sorted(res.pop, key=lambda p: p.F)
+    X = np.stack([p.X for p in sortedpop])
+else:
+    X = res.pop.get("X")
+
 rnd = np.random.RandomState()
-z = rnd.randn(1, 512).astype('float32')
-# z is the latent space
+ls = rnd.randn(config.batch_size, config.dim_z).astype('float32')
+ls = ls.astyle(float)
 
-# running generator network
-out_generator = generator(z)
-out_discriminator = discriminator(out_generator)
-print("Discriminator output with GENERATED IMAGE", out_discriminator)
-
-# converting image to uint8
-out_image = convert_images_to_uint8(out_generator, nchw_to_nhwc=True, uint8_cast=True)
-generate_and_save_images(out_image.numpy(), 0)
-'''
-target_size = 1024
-file_path = "images/real_images/anne.jpg"
-img = tf.io.read_file(file_path)
-img_original = tf.io.decode_jpeg(img, channels=3)
-img = tf.image.resize(img_original, [target_size, target_size])
-img = tf.transpose(img, [2, 0, 1])  # Convert from [height, width, channel] to [channel, height, width]
-img = img * 2 / 255.0 - 1  # Scale each pixel from [0,255] to [-1,1]
-img_array = np.array([img])  # Create a bench
-
-# out_discriminator = discriminator(img_array)
-# print("Discriminator output with REAL IMAGE", out_discriminator)
-
-clip = CLIP.CLIP()
-clip_target_size = 224
-
-img = tf.image.resize(img_original, [clip_target_size, clip_target_size])
-# Check pixels range, it should be [0, 255]
-img_array = np.array([img])  # Create a bench
-img_array = normalize_image(img_array,  # PyTorch does it
-                            (0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
-# print(img_latent_space)  # Array of 512
-
-parole = ["a diagram", "a dog", "a cat", "a neural network"]
-tokenized = clip.tokenize(parole)
-print("tokenized", tokenized)
-text = np.expand_dims(tokenized, 0).astype(int)  # grml... keras doesnt like different cardinality in batch dim
-logits_per_image, logits_per_text = clip.predict(img_array, text)
-tf_probs = tf.nn.softmax(logits_per_image, axis=1)
-tf_probs = np.array(tf_probs)
-print(tf_probs)
