@@ -6,8 +6,6 @@ from StyleGAN2.utils.utils_stylegan2 import convert_images_to_uint8
 from StyleGAN2.stylegan2_generator import StyleGan2Generator
 from StyleGAN2.stylegan2_discriminator import StyleGan2Discriminator
 
-from CLIP import CLIP
-
 
 def generate_and_save_images(images, it, plot_fig=True):
     plt.close()
