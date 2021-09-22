@@ -1,3 +1,5 @@
+import argparse
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -5,6 +7,22 @@ import tensorflow as tf
 from StyleGAN2.utils.utils_stylegan2 import convert_images_to_uint8
 from StyleGAN2.stylegan2_generator import StyleGan2Generator
 from StyleGAN2.stylegan2_discriminator import StyleGan2Discriminator
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument( "--config", type=srt, default="StyleGAN2_ffhq_d" )    #MODEL
+parser.add_argument( "--generations", type=int, default=500 )       #Number of images generated
+parser.add_argument( "--save-each", type=int, default=50 )          #Images saved each 50 generations
+parser.add_argument("--tmp-folder", type=str, default="./tmp")      #Folder in which save the generated images
+parser.add_argument("--target", type=str, default="a wolf at night with the moon in the background")    #txt2img
+
+config = parser.parse_args()
+
+iteration = 0
+
+#def save_callback(algorithm):
+    
+problem = GenerationProblem( config )
 
 
 def generate_and_save_images(images, it, plot_fig=True):
