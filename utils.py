@@ -15,7 +15,7 @@ def biggan_denorm(images):
 
 
 def normalize_image(images, mean, std):
-    print("QUI3", images.shape)
+
     for image in range(images.shape[0]):
         for row in range(images.shape[1]):
             for col in range(images.shape[2]):

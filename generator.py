@@ -1,5 +1,6 @@
 import tensorflow as tf
 from CLIP import CLIP
+import numpy as np
 
 from StyleGAN2.stylegan2_generator import StyleGan2Generator
 from StyleGAN2.stylegan2_discriminator import StyleGan2Discriminator
@@ -31,14 +32,11 @@ class Generator:
 
     def process_image(self, image):
         clip_target_size = 224
-        print("QUI1", image.shape)
 
         img = tf.transpose(image, [0, 2, 3, 1])  # C HW -> HWC
         img = tf.image.resize(img, [clip_target_size, clip_target_size])
         img = img.numpy().astype(float)
         img /= 255
-
-        print("QUI2", img.shape)
 
         img = utils.normalize_image(img,  # PyTorch does it
                                     (0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
@@ -51,11 +49,19 @@ class Generator:
 
         text_features = self.config.target
         tokenized_text = self.clip.tokenize(text_features)
+        tokenized_text = np.expand_dims(tokenized_text, 0).astype(int)
         processed_image = self.process_image(input)
 
-        text_features = self.clip.predict_text(tokenized_text)
-        image_features = self.clip.predict_image(processed_image)
+        aggregated_prediction = True
+        if aggregated_prediction:
+            image_features, text_features = self.clip.predict(processed_image, tokenized_text)
+        else:
+            image_features = self.clip.predict_image(processed_image)
+            text_features = self.clip.predict_text(tokenized_text)
 
         cosine_loss = tf.keras.losses.cosine_similarity(image_features, text_features)
+        print("IMG", image_features)
+        print("TXT", text_features)
+        print("LSS", cosine_loss)
 
         return cosine_loss

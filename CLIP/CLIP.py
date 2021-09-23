@@ -10,6 +10,7 @@ class CLIP:
         self.__load_models()
 
     def __load_models(self):
+        self.model = tf.keras.models.load_model("CLIP/models/general")
         self.text_model = tf.keras.models.load_model("CLIP/models/text_model")
         self.image_model = tf.keras.models.load_model("CLIP/models/image_model")
 
@@ -29,14 +30,13 @@ class CLIP:
     '''
 
     def predict_text(self, text_input):
-        text_input = text_input.astype("float32")
-        print("PREDICT TXT", text_input)
-        print("SHAPE TXT", text_input.shape, text_input.dtype)
         return self.text_model.predict(text_input)
 
     def predict_image(self, image_input):
-        print("SHAPE IMG", image_input.shape)
-        return self.text_model.predict(image_input)
+        return self.image_model.predict(image_input)
+
+    def predict(self, image_input, text_input):
+        return self.model((image_input, text_input))
 
     def tokenize(self, texts, context_length: int = 77,
                  truncate: bool = False):
