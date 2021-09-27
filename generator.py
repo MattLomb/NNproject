@@ -31,7 +31,7 @@ class Generator:
         return self.discriminator(images)
 
     def process_image(self, image):
-        clip_target_size = 224
+        clip_target_size = 299
 
         img = tf.transpose(image, [0, 2, 3, 1])  # C HW -> HWC
         img = tf.image.resize(img, [clip_target_size, clip_target_size])
@@ -48,20 +48,23 @@ class Generator:
             input = self.augmentation(input)
 
         text_features = self.config.target
-        tokenized_text = self.clip.tokenize(text_features)
-        tokenized_text = np.expand_dims(tokenized_text, 0).astype(int)
+        text_features = tf.convert_to_tensor([text_features])
+
+        # tokenized_text = self.clip.tokenize(text_features)
+        # tokenized_text = np.expand_dims(tokenized_text, 0).astype(np.int64)
         processed_image = self.process_image(input)
 
-        aggregated_prediction = True
+        aggregated_prediction = False
         if aggregated_prediction:
-            image_features, text_features = self.clip.predict(processed_image, tokenized_text)
+            image_features, text_features = self.clip.predict(processed_image, text_features)
         else:
             image_features = self.clip.predict_image(processed_image)
-            text_features = self.clip.predict_text(tokenized_text)
+            text_features = self.clip.predict_text(text_features)
+
+        print("TXT", text_features.shape)
+        print("IMG", image_features.shape)
 
         cosine_loss = tf.keras.losses.cosine_similarity(image_features, text_features)
-        print("IMG", image_features)
-        print("TXT", text_features)
         print("LSS", cosine_loss)
 
         return cosine_loss

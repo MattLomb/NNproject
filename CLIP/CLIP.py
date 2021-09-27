@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow_text  # Needed for models
 import numpy as np
 from CLIP.simple_tokenizer import SimpleTokenizer as _Tokenizer
 
@@ -10,9 +11,9 @@ class CLIP:
         self.__load_models()
 
     def __load_models(self):
-        self.model = tf.keras.models.load_model("CLIP/models/general")
-        self.text_model = tf.keras.models.load_model("CLIP/models/text_model")
-        self.image_model = tf.keras.models.load_model("CLIP/models/image_model")
+        # self.model = tf.keras.models.load_model("CLIP/models/general")
+        self.text_model = tf.keras.models.load_model("CLIP/models/txt_enc")
+        self.image_model = tf.keras.models.load_model("CLIP/models/vis_enc")
 
     '''
     Incompatible shapes: [50,768] vs. [1,1025,768]
@@ -35,8 +36,8 @@ class CLIP:
     def predict_image(self, image_input):
         return self.image_model.predict(image_input)
 
-    def predict(self, image_input, text_input):
-        return self.model((image_input, text_input))
+    # def predict(self, image_input, text_input):
+    #    return self.model((image_input, text_input))
 
     def tokenize(self, texts, context_length: int = 77,
                  truncate: bool = False):
@@ -73,3 +74,9 @@ class CLIP:
             result[i, :len(tokens)] = tokens
 
         return result
+
+    def get_text_model(self):
+        return self.text_model
+
+    def get_image_model(self):
+        return self.image_model
