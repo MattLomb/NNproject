@@ -2,6 +2,7 @@ import argparse
 import os
 import pickle
 import numpy as np
+import tensorflow as tf
 
 from pymoo.factory import get_algorithm, get_decision_making, get_decomposition
 from pymoo.optimize import minimize
@@ -19,9 +20,9 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("--config", type=str, default="StyleGAN2_ffhq_d")  # MODEL
 parser.add_argument("--generations", type=int, default=500)  # Number of images generated
-parser.add_argument("--save-each", type=int, default=50)  # Images saved each 50 generations
+parser.add_argument("--save-each", type=int, default=10)  # Images saved each 50 generations
 parser.add_argument("--tmp-folder", type=str, default="./tmp")  # Folder in which save the generated images
-parser.add_argument("--target", type=str, default="a wolf at night with the moon in the background")  # txt2img
+parser.add_argument("--target", type=str, default="A men with glasses and blue eyes")  # txt2img
 
 config = parser.parse_args()
 vars(config).update(get_config(config.config))
@@ -37,14 +38,13 @@ def save_callback(algorithm):
     if iteration % config.save_each == 0 or iteration == config.generations:
         if config.problem_args["n_obj"] == 1:
             sortedpop = sorted(algorithm.pop, key=lambda p: p.F)
-            X = np.stack([p.X for p in sortedpop])
+            x = np.stack([p.X for p in sortedpop])
         else:
-            X = algorithm.pop.get("X")
+            x = algorithm.pop.get("X")
 
-        ls = config.latent(config)
-        ls.set_from_population(X)
+        ls = tf.convert_to_tensor(x)
 
-        generated = algorithm.problem.generator.generate(ls, minibatch=config.batch_size)
+        generated = algorithm.problem.generator.generate(ls)
         ext = "jpg"
         name = "genetic-it-%d.%s" % (
             iteration, ext) if iteration < config.generations else "genetic-it-final.%s" % (ext,)

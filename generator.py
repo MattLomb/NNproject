@@ -61,10 +61,11 @@ class Generator:
             image_features = self.clip.predict_image(processed_image)
             text_features = self.clip.predict_text(text_features)
 
-        print("TXT", text_features.shape)
-        print("IMG", image_features.shape)
-
         cosine_loss = tf.keras.losses.cosine_similarity(image_features, text_features)
-        print("LSS", cosine_loss)
 
         return cosine_loss
+
+    def save(self, input, path):
+        # (1, 3, 1024, 1024) -> (1, 1024, 1024, 3)
+        if len(input) > 0:
+            tf.keras.utils.save_img(path, input[0], data_format="channels_first")

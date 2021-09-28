@@ -12,10 +12,11 @@ class GenerationProblem(Problem):
         super().__init__(**self.config.problem_args)
 
     def _evaluate(self, x, out, *args, **kwargs):
-        rnd = np.random.RandomState()
-        ls = rnd.randn(self.config.batch_size, self.config.dim_z).astype('float32')
+        # X shape (pop_size, n_var)
 
-        generated = self.generator.generate(ls)
+        x_tensor = tf.convert_to_tensor(x)
+
+        generated = self.generator.generate(x_tensor)
 
         sim = self.generator.clip_similarity(generated)
 
@@ -27,4 +28,4 @@ class GenerationProblem(Problem):
         else:
             out["F"] = -sim
 
-        out["G"] = np.zeros((x.shape[0]))
+        out["G"] = np.zeros((x.shape[0]))  # Constrains

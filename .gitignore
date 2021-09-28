@@ -8,5 +8,4 @@
 /images/generated/*.jpeg
 /images/generated/*.jpg
 /images/generated/*.png
-/CLIP/CLIP-tf2/
-/CLIP/model/
+/CLIP/models/*/

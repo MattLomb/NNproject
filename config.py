@@ -4,16 +4,16 @@ configs = dict(
     StyleGAN2_ffhq_d=dict(
         task="txt2img",
         dim_z=512,
-        batch_size=1,  # 1 Because in tf on CPU StyleGan works only with batchsize = 1
-        pop_size=16,
-        algorithm="ga",
+        batch_size=1,   # 1 Because in tf on CPU StyleGan works only with batchsize = 1
+        pop_size=1,     # Size of x in _evaluation
+        algorithm="nsga2",
         # latent
         # model
         use_discriminator=True,
         norm=biggan_norm,
         denorm=biggan_denorm,
         problem_args=dict(
-            n_var=512,
+            n_var=512,  # X in _evaluation has size of (pop_size, n_var)
             n_obj=2,
             n_constr=512,
             xl=-10,
