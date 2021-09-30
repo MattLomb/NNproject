@@ -19,10 +19,10 @@ from config import get_config
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--config", type=str, default="StyleGAN2_ffhq_d")  # MODEL
-parser.add_argument("--generations", type=int, default=500)  # Number of images generated
+parser.add_argument("--generations", type=int, default=50)  # Number of images generated
 parser.add_argument("--save-each", type=int, default=10)  # Images saved each 50 generations
 parser.add_argument("--tmp-folder", type=str, default="./tmp")  # Folder in which save the generated images
-parser.add_argument("--target", type=str, default="A men with glasses and blue eyes")  # txt2img
+parser.add_argument("--target", type=str, default="A man with glasses")  # txt2img
 
 config = parser.parse_args()
 vars(config).update(get_config(config.config))
@@ -97,5 +97,5 @@ else:
 
 rnd = np.random.RandomState()
 ls = rnd.randn(config.batch_size, config.dim_z).astype('float32')
-ls = ls.astyle(float)
+ls = ls.astype(float)
 
