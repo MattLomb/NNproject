@@ -38,7 +38,7 @@ def create_vision_encoder(num_projection_layers, projection_dims, dropout_rate, 
     for layer in xception.layers:
         layer.trainable = trainable
     # Receive the images as inputs.
-    inputs = layers.Input(shape=(299, 299, 3), name="image_input")
+    inputs = layers.Input(shape=(218, 218, 3), name="image_input")
     # Preprocess the input image.
     xception_input = tf.keras.applications.xception.preprocess_input(inputs)
     # Generate the embeddings for the images using the xception model.
@@ -150,17 +150,24 @@ class DualEncoder(keras.Model):
 
 
 num_epochs = 5  # In practice, train for at least 30 epochs
-batch_size = 32
+batch_size = 16
+train = False
 
-vision_encoder = create_vision_encoder(
-    num_projection_layers=1, projection_dims=256, dropout_rate=0.1
-)
-text_encoder = create_text_encoder(
-    num_projection_layers=1, projection_dims=256, dropout_rate=0.1
-)
+if train:
+    vision_encoder = create_vision_encoder(
+        num_projection_layers=1, projection_dims=256, dropout_rate=0.1
+    )
+    text_encoder = create_text_encoder(
+        num_projection_layers=1, projection_dims=256, dropout_rate=0.1
+    )
+else:
+    vision_encoder = tf.keras.models.load_model("vision_encoder")
+    text_encoder = tf.keras.models.load_model("text_encoder")
+
 dual_encoder = DualEncoder(text_encoder, vision_encoder, temperature=0.05)
 dual_encoder.compile(
-    optimizer=tfa.optimizers.AdamW(learning_rate=0.001, weight_decay=0.001)
+    optimizer=tfa.optimizers.AdamW(learning_rate=0.001, weight_decay=0.001),
+    metrics=[tf.keras.metrics.Accuracy()]
 )
 
 print("loading dataset")
@@ -183,10 +190,21 @@ reduce_lr = keras.callbacks.ReduceLROnPlateau(
 early_stopping = tf.keras.callbacks.EarlyStopping(
     monitor="val_loss", patience=5, restore_best_weights=True
 )
-history = dual_encoder.fit(
-    train_ds,
-    epochs=num_epochs,
-    validation_data=validation_ds,
-    callbacks=[reduce_lr, early_stopping],
-)
+if train:
+    print("Starting train")
+    history = dual_encoder.fit(
+        train_ds,
+        epochs=num_epochs,
+        validation_data=validation_ds,
+        callbacks=[reduce_lr, early_stopping],
+    )
 
+    print("Training completed. Saving vision and text encoders...")
+    vision_encoder.save("vision_encoder")
+    text_encoder.save("text_encoder")
+    print("Models are saved.")
+
+else:
+    evaluation_ds = train_ds.take(100)
+    result = dual_encoder.evaluate(evaluation_ds)
+    print("RESULT",result)

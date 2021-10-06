@@ -1,1 +1,2 @@
-Download models from [here](https://drive.google.com/drive/folders/1fjekBZPN2mWSwPLMgz5gwQCmf97ZVvv9?usp=sharing) and put it inside this folder
+Download models from [here](https://drive.google.com/file/d/1XjFeO9KXfE3Vxc1nzWDcR6Sl4cIqD046/view?usp=sharing) and put it inside this folder
+Check the paths on CLIPV2.py

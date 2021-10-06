@@ -6,10 +6,10 @@ Download celeb_a from here
 https://www.kaggle.com/jessicali9530/celeba-dataset
 '''
 
-base_path = "/home/luca/tensorflow_datasets/download/manual/celeb_a"  # Path of celeb_a
+base_path = "../celeb_a"  # Path of celeb_a
 path = base_path + "/list_attr_celeba.csv" #Path to csv file
 image_path = base_path + "/img_align_celeba/img_align_celeba"   #Path to the folder that contains the images
-target_size = [299, 299]
+target_size = [218, 218]
 
 csv = pd.read_csv(path)
 

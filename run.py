@@ -8,10 +8,6 @@ from pymoo.factory import get_algorithm, get_decision_making, get_decomposition
 from pymoo.optimize import minimize
 from pymoo.visualization.scatter import Scatter
 
-from StyleGAN2.utils.utils_stylegan2 import convert_images_to_uint8
-from StyleGAN2.stylegan2_generator import StyleGan2Generator
-from StyleGAN2.stylegan2_discriminator import StyleGan2Discriminator
-
 from problem import GenerationProblem
 from operators import get_operators
 from config import get_config
@@ -19,10 +15,10 @@ from config import get_config
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--config", type=str, default="StyleGAN2_ffhq_d")  # MODEL
-parser.add_argument("--generations", type=int, default=50)  # Number of images generated
-parser.add_argument("--save-each", type=int, default=10)  # Images saved each 50 generations
+parser.add_argument("--generations", type=int, default=500)  # Number of images generated
+parser.add_argument("--save-each", type=int, default=50)  # Images saved each 50 generations
 parser.add_argument("--tmp-folder", type=str, default="./tmp")  # Folder in which save the generated images
-parser.add_argument("--target", type=str, default="A man with glasses")  # txt2img
+parser.add_argument("--target", type=str, default="A male with Mustache and black hair")  # txt2img
 
 config = parser.parse_args()
 vars(config).update(get_config(config.config))

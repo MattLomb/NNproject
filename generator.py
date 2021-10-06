@@ -13,8 +13,8 @@ class Generator:
         self.augmentation = None
         self.clip = CLIP.CLIP()
 
-        impl = 'ref'  # 'ref' if cuda is not available in your machine
-        gpu = False  # False if tensorflow cpu is used
+        impl = 'cuda'  # 'ref' if cuda is not available in your machine
+        gpu = True  # False if tensorflow cpu is used
         weights_name = 'ffhq'  # face model trained by Nvidia
         # instantiating generator network
         self.generator = StyleGan2Generator(weights=weights_name, impl=impl, gpu=gpu)
@@ -31,12 +31,12 @@ class Generator:
         return self.discriminator(images)
 
     def process_image(self, image):
-        clip_target_size = 299
+        clip_target_size = 218
 
         img = tf.transpose(image, [0, 2, 3, 1])  # C HW -> HWC
         img = tf.image.resize(img, [clip_target_size, clip_target_size])
         img = img.numpy().astype(float)
-        img /= 255
+        # img /= 255
 
         img = utils.normalize_image(img,  # PyTorch does it
                                     (0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))

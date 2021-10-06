@@ -5,7 +5,7 @@ configs = dict(
         task="txt2img",
         dim_z=512,
         batch_size=1,   # 1 Because in tf on CPU StyleGan works only with batchsize = 1
-        pop_size=1,     # Size of x in _evaluation
+        pop_size=4,     # Size of x in _evaluation
         algorithm="nsga2",
         # latent
         # model

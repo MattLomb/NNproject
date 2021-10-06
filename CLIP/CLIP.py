@@ -12,23 +12,8 @@ class CLIP:
 
     def __load_models(self):
         # self.model = tf.keras.models.load_model("CLIP/models/general")
-        self.text_model = tf.keras.models.load_model("CLIP/models/txt_enc")
-        self.image_model = tf.keras.models.load_model("CLIP/models/vis_enc")
-
-    '''
-    Incompatible shapes: [50,768] vs. [1,1025,768]
-    PyTorch
-    _transform(model.input_resolution.item())
-    
-    def _transform(n_px):
-    return Compose([
-        Resize(n_px, interpolation=BICUBIC),
-        CenterCrop(n_px),
-        lambda image: image.convert("RGB"),
-        ToTensor(),
-        Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711)),
-    ])
-    '''
+        self.text_model = tf.keras.models.load_model("CLIP/models/text_encoder")
+        self.image_model = tf.keras.models.load_model("CLIP/models/vision_encoder")
 
     def predict_text(self, text_input):
         return self.text_model.predict(text_input)
@@ -36,25 +21,9 @@ class CLIP:
     def predict_image(self, image_input):
         return self.image_model.predict(image_input)
 
-    # def predict(self, image_input, text_input):
-    #    return self.model((image_input, text_input))
-
     def tokenize(self, texts, context_length: int = 77,
                  truncate: bool = False):
-        """
-        Returns the tokenized representation of given input string(s)
-        Parameters
-        ----------
-        texts : Union[str, List[str]]
-            An input string or a list of input strings to tokenize
-        context_length : int
-            The context length to use; all CLIP-tf2 models use 77 as the context length
-        truncate: bool
-            Whether to truncate the text in case its encoding is longer than the context length
-        Returns
-        -------
-        A two-dimensional tensor containing the resulting tokens, shape = [number of input strings, context_length]
-        """
+
         if isinstance(texts, str):
             texts = [texts]
 
