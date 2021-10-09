@@ -5,6 +5,7 @@ import numpy as np
 from StyleGAN2.stylegan2_generator import StyleGan2Generator
 from StyleGAN2.stylegan2_discriminator import StyleGan2Discriminator
 import utils
+import matplotlib.pyplot as plt
 
 
 class Generator:
@@ -18,7 +19,8 @@ class Generator:
         weights_name = 'ffhq'  # face model trained by Nvidia
         # instantiating generator network
         self.generator = StyleGan2Generator(weights=weights_name, impl=impl, gpu=gpu)
-        self.discriminator = StyleGan2Discriminator(weights=weights_name, impl=impl, gpu=gpu)
+        if self.config.use_discriminator:
+            self.discriminator = StyleGan2Discriminator(weights=weights_name, impl=impl, gpu=gpu)
 
     def generate(self, ls):
         z = ls
@@ -27,8 +29,9 @@ class Generator:
         return result
 
     def discriminate(self, images):
-        images = utils.biggan_denorm(images)
-        return self.discriminator(images)
+        if self.config.use_discriminator:
+            images = utils.biggan_denorm(images)
+            return self.discriminator(images)
 
     def process_image(self, image):
         clip_target_size = 218
@@ -66,6 +69,11 @@ class Generator:
         return cosine_loss
 
     def save(self, input, path):
-        # (1, 3, 1024, 1024) -> (1, 1024, 1024, 3)
-        if len(input) > 0:
-            tf.keras.utils.save_img(path, input[0], data_format="channels_first")
+        input = np.asarray(input)
+        input = np.rollaxis(input, 1, 4)
+        plt.figure(figsize=(2, 2))  # specifying the overall grid size
+        for i in range(4):
+            plt.subplot(2, 2, i + 1)  # the number of images in the grid is 5*5 (25)
+            plt.imshow(input[i])
+
+        plt.savefig(path)
