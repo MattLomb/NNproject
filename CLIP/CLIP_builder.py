@@ -149,11 +149,13 @@ class DualEncoder(keras.Model):
         return {"loss": self.loss_tracker.result()}
 
 
-num_epochs = 5  # In practice, train for at least 30 epochs
+num_epochs = 25  # In practice, train for at least 30 epochs
 batch_size = 16
-train = False
+train = True
+load_models = True
 
-if train:
+if not load_models:
+    print("Creating new models...")
     vision_encoder = create_vision_encoder(
         num_projection_layers=1, projection_dims=256, dropout_rate=0.1
     )
@@ -161,8 +163,9 @@ if train:
         num_projection_layers=1, projection_dims=256, dropout_rate=0.1
     )
 else:
-    vision_encoder = tf.keras.models.load_model("vision_encoder")
-    text_encoder = tf.keras.models.load_model("text_encoder")
+    print("Model loading...")
+    vision_encoder = tf.keras.models.load_model("models/vision_encoder")
+    text_encoder = tf.keras.models.load_model("models/text_encoder")
 
 dual_encoder = DualEncoder(text_encoder, vision_encoder, temperature=0.05)
 dual_encoder.compile(
