@@ -1,4 +1,4 @@
-from pymoo.core.problem import Problem
+from pymoo.model.problem import Problem
 from generator import Generator
 import numpy as np
 import tensorflow as tf

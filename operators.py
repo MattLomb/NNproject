@@ -1,5 +1,5 @@
 from pymoo.factory import get_sampling, get_crossover, get_mutation
-from pymoo.core.sampling import Sampling
+from pymoo.model.sampling import Sampling
 import numpy as np
 
 
