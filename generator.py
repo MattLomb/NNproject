@@ -71,11 +71,14 @@ class Generator:
     def save(self, input, path):
         input = np.asarray(input)
         input = np.rollaxis(input, 1, 4)
-        plt.figure(figsize=(2, 2))  # specifying the overall grid size
+        input_size = len(input)
+        grid_x = 1
+        grid_y = input_size
+        plt.figure(figsize=(grid_x, grid_y))  # specifying the overall grid size
         figure = plt.gcf()  # get current figure
-        figure.set_size_inches(8, 8)
-        for i in range(4):
-            plt.subplot(2, 2, i + 1)  # the number of images in the grid is 5*5 (25)
+        figure.set_size_inches(16, 4)
+        for i in range(input_size):
+            plt.subplot(grid_x, grid_y, i + 1)  # the number of images in the grid is 5*5 (25)
             plt.imshow(input[i], interpolation='nearest')
 
         plt.savefig(path, dpi=100)
