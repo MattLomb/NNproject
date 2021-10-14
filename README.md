@@ -22,6 +22,9 @@ Install the python packages
 pip install -r requirements.txt
 ```
 
+# Colab link
+Inside the main folder, you can find the colab file that allow you to run the implementation. 
+
 # References
 This repository uses these projects:
 - [StyleGAN2-TensorFlow-2.X](https://github.com/rosasalberto/StyleGAN2-TensorFlow-2.x)
