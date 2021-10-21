@@ -7,11 +7,9 @@ https://www.kaggle.com/jessicali9530/celeba-dataset
 '''
 
 base_path = "celeb_a"  # Path of celeb_a
-path = base_path + "/list_attr_celeba.csv" #Path to csv file
-image_path = base_path + "/img_align_celeba/img_align_celeba"   #Path to the folder that contains the images
+path = base_path + "/list_attr_celeba.csv"  # Path to csv file
+image_path = base_path + "/img_align_celeba/img_align_celeba"  # Path to the folder that contains the images
 target_size = [218, 218]
-
-csv = pd.read_csv(path)
 
 features = ["5_o_Clock_Shadow", "Arched_Eyebrows", "Attractive", "Bags_Under_Eyes", "Bald", "Bangs",
             "Big_Lips", "Big_Nose", "Black_Hair", "Blond_Hair", "Blurry", "Brown_Hair", "Bushy_Eyebrows",
@@ -23,12 +21,23 @@ features = ["5_o_Clock_Shadow", "Arched_Eyebrows", "Attractive", "Bags_Under_Eye
             "Wearing_Earrings", "Wearing_Hat", "Wearing_Lipstick", "Wearing_Necklace", "Wearing_Necktie",
             "Young"]
 
+opposite_features = ["", "", "Ugly", "", "", "",
+                     "Small_Lips", "Small_Nose", "", "", "", "", "",
+                     "Thin",
+                     "", "", "", "", "", "", "Woman",
+                     "", "", "wide_Eyes", "beard", "", "",
+                     "",
+                     "", "", "", "", "", "",
+                     "", "", "", "", "",
+                     "Adult"]
+
 
 class DatasetLoader:
 
     def __init__(self):
         self.length = 0
         dict = []
+        csv = pd.read_csv(path)
 
         for row in range(len(csv)):
             img_name = csv.at[row, 'image_id']
@@ -36,6 +45,11 @@ class DatasetLoader:
             for colIndex in range(len(csv.columns[1:])):
                 if csv.at[row, features[colIndex]] == 1:
                     img_features += features[colIndex].replace("_", " ") + " "
+                else:
+                    to_add = opposite_features[colIndex].replace("_", " ")
+                    img_features += to_add
+                    if len(to_add) > 0:
+                        img_features += " "
 
             tf_feature = {"caption": [img_features.strip()], "image": img_name}
             dict.append(tf_feature)
@@ -51,7 +65,7 @@ class DatasetLoader:
             image_string = tf.io.read_file(complete_path)
             image_decoded = tf.image.decode_jpeg(image_string, channels=3)
             image_resized = tf.image.resize(image_decoded, target_size)
-            #image_resized /= 255.0
+            # image_resized /= 255.0
             e['image'] = image_resized
             e['caption'] = tf.convert_to_tensor(e['caption'])
             # e['caption'] = tf.reshape(e['caption'],(None,))

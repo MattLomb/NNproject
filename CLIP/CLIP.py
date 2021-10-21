@@ -95,10 +95,10 @@ class DualEncoder(keras.Model):
         # TF will fallback on available devices if there are fewer than 2 GPUs.
         with tf.device("/gpu:0"):
             # Get the embeddings for the captions.
-            caption_embeddings = text_encoder(features["caption"], training=training)
+            caption_embeddings = self.text_encoder(features["caption"], training=training)
         with tf.device("/gpu:1"):
             # Get the embeddings for the images.
-            image_embeddings = vision_encoder(features["image"], training=training)
+            image_embeddings = self.image_encoder(features["image"], training=training)
         return caption_embeddings, image_embeddings
 
     def compute_loss(self, caption_embeddings, image_embeddings):
@@ -162,7 +162,7 @@ class CLIP:
             num_projection_layers=1, projection_dims=256, dropout_rate=0.1
         )
 
-        if(load_weights):
+        if load_weights:
             self.vision_encoder.load_weights("CLIP/weights/vision")
             self.text_encoder.load_weights("CLIP/weights/text")
 
