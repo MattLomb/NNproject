@@ -6,7 +6,7 @@ Download celeb_a from here
 https://www.kaggle.com/jessicali9530/celeba-dataset
 '''
 
-base_path = "../celeb_a"  # Path of celeb_a
+base_path = "celeb_a"  # Path of celeb_a
 path = base_path + "/list_attr_celeba.csv" #Path to csv file
 image_path = base_path + "/img_align_celeba/img_align_celeba"   #Path to the folder that contains the images
 target_size = [218, 218]
@@ -51,6 +51,7 @@ class DatasetLoader:
             image_string = tf.io.read_file(complete_path)
             image_decoded = tf.image.decode_jpeg(image_string, channels=3)
             image_resized = tf.image.resize(image_decoded, target_size)
+            #image_resized /= 255.0
             e['image'] = image_resized
             e['caption'] = tf.convert_to_tensor(e['caption'])
             # e['caption'] = tf.reshape(e['caption'],(None,))

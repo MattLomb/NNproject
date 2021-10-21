@@ -12,7 +12,7 @@ class Generator:
     def __init__(self, config):
         self.config = config
         self.augmentation = None
-        self.clip = CLIP.CLIP()
+        self.clip = CLIP.CLIP(True)
 
         impl = 'cuda'  # 'ref' if cuda is not available in your machine
         gpu = True  # False if tensorflow cpu is used
@@ -38,12 +38,8 @@ class Generator:
 
         img = tf.transpose(image, [0, 2, 3, 1])  # C HW -> HWC
         img = tf.image.resize(img, [clip_target_size, clip_target_size])
+        img *= 255
         img = img.numpy().astype(float)
-        # img /= 255
-
-        img = utils.normalize_image(img,  # PyTorch does it
-                                    (0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711))
-
         return img
 
     def clip_similarity(self, input):
@@ -51,10 +47,7 @@ class Generator:
             input = self.augmentation(input)
 
         text_features = self.config.target
-        text_features = tf.convert_to_tensor([text_features])
 
-        # tokenized_text = self.clip.tokenize(text_features)
-        # tokenized_text = np.expand_dims(tokenized_text, 0).astype(np.int64)
         processed_image = self.process_image(input)
 
         aggregated_prediction = False
@@ -65,8 +58,10 @@ class Generator:
             text_features = self.clip.predict_text(text_features)
 
         cosine_loss = tf.keras.losses.cosine_similarity(image_features, text_features)
-
-        return cosine_loss
+        image_features = tf.math.l2_normalize(image_features, axis=1)
+        text_features = tf.math.l2_normalize(text_features, axis=1)
+        dot_prod = tf.matmul(text_features, image_features, transpose_b=True)
+        return dot_prod[0]
 
     def save(self, input, path):
         input = np.asarray(input)
@@ -82,3 +77,4 @@ class Generator:
             plt.imshow(input[i], interpolation='nearest')
 
         plt.savefig(path, dpi=100)
+

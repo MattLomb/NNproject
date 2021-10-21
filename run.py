@@ -18,7 +18,7 @@ parser.add_argument("--config", type=str, default="StyleGAN2_ffhq_d")  # MODEL
 parser.add_argument("--generations", type=int, default=500)  # Number of images generated
 parser.add_argument("--save-each", type=int, default=50)  # Images saved each 50 generations
 parser.add_argument("--tmp-folder", type=str, default="./tmp")  # Folder in which save the generated images
-parser.add_argument("--target", type=str, default="A male with Mustache and black hair")  # txt2img
+parser.add_argument("--target", type=str, default="A male with mustache")  # txt2img
 
 config = parser.parse_args()
 vars(config).update(get_config(config.config))

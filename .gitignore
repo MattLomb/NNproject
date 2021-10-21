@@ -10,3 +10,5 @@
 /images/generated/*.png
 /CLIP/models/*/
 /celeb_a/
+/CLIP/weights/*
+/tmp/*
