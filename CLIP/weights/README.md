@@ -1,1 +1,1 @@
-Download weights from [here](https://drive.google.com/file/d/1rwyRhu4Yub9tzHcUFisU--eOhv_SX0KY/view?usp=sharing) and put them here
+Download weights from [here](https://drive.google.com/drive/folders/1QF1W9EHNiucCb14QatMcVQtxuE0mngH-?usp=sharing) and put them here

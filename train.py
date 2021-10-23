@@ -1,4 +1,6 @@
 from CLIP.CLIP import CLIP
 
 clip = CLIP(False)
-clip.train()
+epoches = 10
+batch_size = 64
+clip.train(epoches, batch_size)

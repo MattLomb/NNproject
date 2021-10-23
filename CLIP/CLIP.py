@@ -172,10 +172,7 @@ class CLIP:
             metrics=[tf.keras.metrics.Accuracy()]
         )
 
-    def train(self):
-        num_epochs = 10  # In practice, train for at least 30 epochs
-        batch_size = 64
-
+    def train(self, epoches, batch_size):
         print("loading dataset")
         dataset_loader = DatasetLoader()
         ds = dataset_loader.getDataset(batch_size)
@@ -200,20 +197,20 @@ class CLIP:
         print("Starting train")
         history = self.dual_encoder.fit(
             train_ds,
-            epochs=num_epochs,
+            epochs=epoches,
             validation_data=validation_ds,
             callbacks=[reduce_lr, early_stopping],
         )
 
         print("Training completed. Saving vision and text encoders...")
-        vision_encoder.save_weights("weights/vision")
-        text_encoder.save_weights("weights/text")
+        self.vision_encoder.save_weights("CLIP/weights/vision")
+        self.text_encoder.save_weights("CLIP/weights/text")
         print("Models are saved.")
 
     # A string
     def predict_text(self, text):
+        text = text.lower()
         return self.text_encoder.predict(tf.convert_to_tensor([text]))
 
-    # input a batch of [299,299] RGB images
     def predict_image(self, image):
         return self.vision_encoder.predict(image)

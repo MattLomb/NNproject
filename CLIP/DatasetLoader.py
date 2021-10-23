@@ -25,7 +25,7 @@ opposite_features = ["", "", "Ugly", "", "", "",
                      "Small_Lips", "Small_Nose", "", "", "", "", "",
                      "Thin",
                      "", "", "", "", "", "", "Woman",
-                     "", "", "wide_Eyes", "beard", "", "",
+                     "", "", "wide_Eyes", "", "", "",
                      "",
                      "", "", "", "", "", "",
                      "", "", "", "", "",
@@ -51,6 +51,7 @@ class DatasetLoader:
                     if len(to_add) > 0:
                         img_features += " "
 
+            img_features = img_features.lower()
             tf_feature = {"caption": [img_features.strip()], "image": img_name}
             dict.append(tf_feature)
             self.length += 1
