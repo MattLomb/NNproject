@@ -13,10 +13,16 @@ import tensorflow_addons as tfa
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from tqdm import tqdm
+'''
+
+Reference: https://colab.research.google.com/github/keras-team/keras-io/blob/master/examples/nlp/ipynb/nl_image_search.ipynb#scrollTo=DtVpElWDkUkF
+
+Tensorflow 2.0 implementation of CLIP network
+
+'''
 
 # Suppressing tf.hub warnings
 tf.get_logger().setLevel("ERROR")
-
 
 def project_embeddings(embeddings, num_projection_layers, projection_dims, dropout_rate):
     projected_embeddings = layers.Dense(units=projection_dims)(embeddings)

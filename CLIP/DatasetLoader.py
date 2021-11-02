@@ -2,8 +2,10 @@ import pandas as pd
 import tensorflow as tf
 
 '''
+
 Download celeb_a from here
 https://www.kaggle.com/jessicali9530/celeba-dataset
+
 '''
 
 base_path = "celeb_a"  # Path of celeb_a
@@ -11,6 +13,7 @@ path = base_path + "/list_attr_celeba.csv"  # Path to csv file
 image_path = base_path + "/img_align_celeba/img_align_celeba"  # Path to the folder that contains the images
 target_size = [218, 218]
 
+# Attributes of celeb_a images
 features = ["5_o_Clock_Shadow", "Arched_Eyebrows", "Attractive", "Bags_Under_Eyes", "Bald", "Bangs",
             "Big_Lips", "Big_Nose", "Black_Hair", "Blond_Hair", "Blurry", "Brown_Hair", "Bushy_Eyebrows",
             "Chubby",
@@ -39,6 +42,7 @@ class DatasetLoader:
         dict = []
         csv = pd.read_csv(path)
 
+        #Parse and concatenate attributes of each image of the dataset
         for row in range(len(csv)):
             img_name = csv.at[row, 'image_id']
             img_features = ""
@@ -62,14 +66,11 @@ class DatasetLoader:
         def load_images(e):
             file_name = e['image']
             complete_path = image_path + "/" + file_name
-
             image_string = tf.io.read_file(complete_path)
             image_decoded = tf.image.decode_jpeg(image_string, channels=3)
             image_resized = tf.image.resize(image_decoded, target_size)
-            # image_resized /= 255.0
             e['image'] = image_resized
             e['caption'] = tf.convert_to_tensor(e['caption'])
-            # e['caption'] = tf.reshape(e['caption'],(None,))
             return e
 
         return self.ds.map(load_images, num_parallel_calls=tf.data.AUTOTUNE) \
