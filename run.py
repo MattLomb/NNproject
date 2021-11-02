@@ -34,7 +34,7 @@ def save_callback(algorithm):
 
     iteration += 1
     if iteration % config.save_each == 0 or iteration == config.generations:
-        if config.problem_args["n_obj"] == 1:
+        if not config.use_discriminator:
             sortedpop = sorted(algorithm.pop, key=lambda p: p.F)
             x = np.stack([p.X for p in sortedpop])
         else:
@@ -77,28 +77,8 @@ res = minimize(
     verbose=True,
 )
 
-'''
-pickle.dump(dict(
-    X=res.X,
-    F=res.F,
-    G=res.G,
-    CV=res.CV,
-), open(os.path.join(config.tmp_folder, "genetic_result"), "wb"))
-'''
-
 #Plotting the graph
-if config.problem_args["n_obj"] == 2:
+if config.use_discriminator:
     plot = Scatter(labels=["similarity", "discriminator", ])
     plot.add(res.F, color="red")
     plot.save(os.path.join(config.tmp_folder, "F.jpg"))
-
-if config.problem_args["n_obj"] == 1:
-    sortedpop = sorted(res.pop, key=lambda p: p.F)
-    X = np.stack([p.X for p in sortedpop])
-else:
-    X = res.pop.get("X")
-
-rnd = np.random.RandomState()
-ls = rnd.randn(config.batch_size, config.dim_z).astype('float32')
-ls = ls.astype(float)
-

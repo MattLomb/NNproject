@@ -15,7 +15,7 @@ class GenerationProblem(Problem):
         x_tensor = tf.convert_to_tensor(x)
         generated = self.generator.generate(x_tensor)
         sim = self.generator.clip_similarity(generated)
-        if self.config.problem_args["n_obj"] == 2 and self.config.use_discriminator:
+        if self.config.use_discriminator:
             dis = self.generator.discriminate(generated)
             hinge = tf.nn.relu(1 - dis)
             hinge = tf.squeeze(hinge).numpy()
