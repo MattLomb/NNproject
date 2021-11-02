@@ -14,18 +14,20 @@ from config import get_config
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--config", type=str, default="StyleGAN2_ffhq_nod")  # MODEL
-parser.add_argument("--generations", type=int, default=500)  # Number of images generated
-parser.add_argument("--save-each", type=int, default=50)  # Images saved each 50 generations
-parser.add_argument("--tmp-folder", type=str, default="./tmp")  # Folder in which save the generated images
-parser.add_argument("--target", type=str, default="A male with mustache")  # txt2img
+parser.add_argument("--config", type=str, default="StyleGAN2_ffhq_nod")         # MODEL
+parser.add_argument("--generations", type=int, default=500)                     # Number of images generated
+parser.add_argument("--save-each", type=int, default=50)                        # Images saved each 50 generations
+parser.add_argument("--tmp-folder", type=str, default="./tmp")                  # Folder in which save the generated images
+parser.add_argument("--target", type=str, default="A male with mustache")       # TARGET: txt2img
 
 config = parser.parse_args()
 vars(config).update(get_config(config.config))
 
 iteration = 0
 
-
+'''
+    Functions that saves results in tmp_folder at each "save-each" value iterations
+'''
 def save_callback(algorithm):
     global iteration
     global config
@@ -46,13 +48,14 @@ def save_callback(algorithm):
             iteration, ext) if iteration < config.generations else "genetic-it-final.%s" % (ext,)
         algorithm.problem.generator.save(generated, os.path.join(config.tmp_folder, name))
 
-
+#Generating the related problem
 problem = GenerationProblem(config)
 operators = get_operators(config)
 
 if not os.path.exists(config.tmp_folder):
     os.mkdir(config.tmp_folder)
 
+#Pymoo function to get the algorithm related to the problem
 algorithm = get_algorithm(
     config.algorithm,
     pop_size=config.pop_size,
@@ -65,6 +68,7 @@ algorithm = get_algorithm(
            config.algorithm] if "algorithm_args" in config and config.algorithm in config.algorithm_args else dict())
 )
 
+#Pymoo function to minimize the problem with the associated algorithm
 res = minimize(
     problem,
     algorithm,
@@ -73,13 +77,16 @@ res = minimize(
     verbose=True,
 )
 
+'''
 pickle.dump(dict(
     X=res.X,
     F=res.F,
     G=res.G,
     CV=res.CV,
 ), open(os.path.join(config.tmp_folder, "genetic_result"), "wb"))
+'''
 
+#Plotting the graph
 if config.problem_args["n_obj"] == 2:
     plot = Scatter(labels=["similarity", "discriminator", ])
     plot.add(res.F, color="red")
