@@ -1,1 +1,5 @@
-Download weights from [here](https://drive.google.com/drive/folders/1QF1W9EHNiucCb14QatMcVQtxuE0mngH-?usp=sharing) and put them here
+Run the `download_weights.sh` script from this folder to download the weights for the CLIP model
+
+```bash
+./download_weights.sh
+```
