@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 class Generator:
     def __init__(self, config):
         self.config = config
-        self.augmentation = None
         self.clip = CLIP.CLIP(True)
 
         impl = 'cuda'                   # 'ref' if cuda is not available in your machine
@@ -20,6 +19,8 @@ class Generator:
         self.generator = StyleGan2Generator(weights=weights_name, impl=impl, gpu=gpu)
         if self.config.use_discriminator:
             self.discriminator = StyleGan2Discriminator(weights=weights_name, impl=impl, gpu=gpu)
+
+        self.text_features = self.clip.predict_text(self.config.target)
 
     #Generation of the images from the latent space
     def generate(self, ls):
@@ -45,21 +46,10 @@ class Generator:
 
     #Function that computes the similarity between the given caption and the generated images
     def clip_similarity(self, input):
-        if self.augmentation is not None:
-            input = self.augmentation(input)
-
-        text_features = self.config.target
-
         processed_image = self.process_image(input)
+        image_features = self.clip.predict_image(processed_image)
 
-        aggregated_prediction = False
-        if aggregated_prediction:
-            image_features, text_features = self.clip.predict(processed_image, text_features)
-        else:
-            image_features = self.clip.predict_image(processed_image)
-            text_features = self.clip.predict_text(text_features)
-
-        return tf.keras.losses.cosine_similarity(image_features, text_features)
+        return tf.keras.losses.cosine_similarity(image_features, self.text_features)
 
     #Save the generated images inside the folder specified by the given path
     def save(self, input, path):
