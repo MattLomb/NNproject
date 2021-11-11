@@ -19,7 +19,7 @@ class GenerationProblem(Problem):
             dis = self.generator.discriminate(generated)
             hinge = tf.nn.relu(1 - dis)
             hinge = tf.squeeze(hinge).numpy()
-            out["F"] = np.column_stack((-sim, hinge))
+            out["F"] = np.column_stack((sim, hinge))
         else:
-            out["F"] = -sim
+            out["F"] = sim
         out["G"] = np.zeros((x.shape[0]))  # Constrains

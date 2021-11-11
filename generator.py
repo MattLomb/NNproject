@@ -59,8 +59,7 @@ class Generator:
             image_features = self.clip.predict_image(processed_image)
             text_features = self.clip.predict_text(text_features)
 
-        cosine_loss = tf.keras.losses.cosine_similarity(image_features, text_features)
-        return cosine_loss
+        return tf.keras.losses.cosine_similarity(image_features, text_features)
 
     #Save the generated images inside the folder specified by the given path
     def save(self, input, path):
