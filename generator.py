@@ -26,13 +26,13 @@ class Generator:
     def generate(self, ls):
         z = ls
         result = self.generator(z)
-        result = utils.biggan_norm(result)
+        result = utils.norm(result)
         return result
 
     #Discriminate the images
     def discriminate(self, images):
         if self.config.use_discriminator:
-            images = utils.biggan_denorm(images)
+            images = utils.denorm(images)
             return self.discriminator(images)
 
     #Modifies the given image in order to be processed by CLIP

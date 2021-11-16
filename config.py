@@ -1,4 +1,4 @@
-from utils import biggan_norm, biggan_denorm
+from utils import norm, denorm
 
 
 '''
@@ -19,8 +19,8 @@ configs = dict(
         pop_size = 8,               # Size of x in _evaluation
         algorithm = "nsga2",
         use_discriminator = True,
-        norm = biggan_norm,
-        denorm = biggan_denorm,
+        norm = norm,
+        denorm = denorm,
         problem_args = dict(
             n_var = 512,            # X in _evaluation has size of (pop_size, n_var) -> latent space dimension
             n_constr = 512,
@@ -35,8 +35,8 @@ configs = dict(
         pop_size = 8,               # Size of x in _evaluation
         algorithm = "ga",
         use_discriminator = False,
-        norm = biggan_norm,
-        denorm = biggan_denorm,
+        norm = norm,
+        denorm = denorm,
         problem_args = dict(
             n_var = 512,            # X in _evaluation has size of (pop_size, n_var) -> latent space dimension
             n_constr = 512,
